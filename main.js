@@ -604,7 +604,7 @@ ${variant}`;
   var VERSION = "1.1.0";
   var TARGET_NAME = "main";
   var INITIAL_ELM_COMPILED_TIMESTAMP = Number(
-    "1668199828263"
+    "1668200306742"
   );
   var ORIGINAL_COMPILATION_MODE = "standard";
   var ORIGINAL_BROWSER_UI_POSITION = "BottomLeft";
@@ -9982,7 +9982,7 @@ var $author$project$Main$viewGameControls = A2(
 			_List_fromArray(
 				[
 					A2($elm$html$Html$Attributes$style, 'position', 'absolute'),
-					A2($elm$html$Html$Attributes$style, 'right', '15px'),
+					A2($elm$html$Html$Attributes$style, 'right', '95px'),
 					A2($elm$html$Html$Attributes$style, 'top', '50px'),
 					A2($elm$html$Html$Attributes$style, 'width', '50px'),
 					A2($elm$html$Html$Attributes$style, 'height', '50px'),
@@ -9999,7 +9999,7 @@ var $author$project$Main$viewGameControls = A2(
 			_List_fromArray(
 				[
 					A2($elm$html$Html$Attributes$style, 'position', 'absolute'),
-					A2($elm$html$Html$Attributes$style, 'right', '95px'),
+					A2($elm$html$Html$Attributes$style, 'right', '15px'),
 					A2($elm$html$Html$Attributes$style, 'top', '50px'),
 					A2($elm$html$Html$Attributes$style, 'width', '50px'),
 					A2($elm$html$Html$Attributes$style, 'height', '50px'),
