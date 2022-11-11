@@ -37,6 +37,11 @@ enemyRespawn =
     }
 
 
+gameControlsMaxScreenWidth : Int
+gameControlsMaxScreenWidth =
+    1000
+
+
 gameMap : List { x : Float, y : Float, char : Char }
 gameMap =
     [ "# ################ #"
@@ -105,6 +110,7 @@ type alias Model =
     , enemies : List Enemy
     , bullets : List Bullet
     , food : List Food
+    , screenWidth : Int
     }
 
 
@@ -145,8 +151,8 @@ type Direction
     | Right
 
 
-init : () -> ( Model, Cmd Msg )
-init _ =
+init : Int -> ( Model, Cmd Msg )
+init screenWidth =
     ( { player = { x = boxWidth * 9.5, y = boxWidth * 15, direction = Left }
       , keysDown = Set.empty
       , enemies =
@@ -157,6 +163,7 @@ init _ =
             ]
       , bullets = []
       , food = initialFood
+      , screenWidth = screenWidth
       }
     , Cmd.none
     )
@@ -174,7 +181,7 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Restart ->
-            init ()
+            init model.screenWidth
 
         AnimationFrame timeNow ->
             ( { model
@@ -567,8 +574,11 @@ viewBottom model =
     else if List.any (overlapping model.player) model.enemies then
         viewGameOverMessage False
 
-    else
+    else if model.screenWidth <= gameControlsMaxScreenWidth then
         viewGameControls
+
+    else
+        text ""
 
 
 viewGameOverMessage : Bool -> Html Msg
@@ -731,7 +741,7 @@ subscriptions model =
         ]
 
 
-main : Program () Model Msg
+main : Program Int Model Msg
 main =
     Browser.element
         { init = init
