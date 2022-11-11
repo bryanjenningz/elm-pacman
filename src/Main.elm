@@ -6,6 +6,7 @@ import Html exposing (Html, button, div, text)
 import Html.Attributes exposing (style)
 import Json.Decode as Decode
 import Set exposing (Set)
+import Time
 
 
 gameWidth : Float
@@ -23,6 +24,11 @@ moveSpeed =
     2
 
 
+changeDirectionTime : Int
+changeDirectionTime =
+    500
+
+
 gameMap : List { x : Float, y : Float, char : Char }
 gameMap =
     [ "# ################ #"
@@ -30,14 +36,14 @@ gameMap =
     , "# ### ######## ### #"
     , "# #              # #"
     , "# # #### ## #### # #"
-    , "#   #    ##    #   #"
-    , "# ### ######## ### #"
-    , "                    "
-    , "# ##### #### ##### #"
-    , "#       #  #       #"
-    , "# ### # #### # ### #"
+    , "#   #          #   #"
+    , "# ### ###  ### ### #"
+    , "    #          #    "
+    , "# # ### #ii# ### # #"
+    , "#       #ii#       #"
+    , "# ### # #  # # ### #"
     , "#     #      #     #"
-    , "##### ######## #####"
+    , "##### ###  ### #####"
     , "      #      #      "
     , "# # ### #### ### # #"
     , "# #              # #"
@@ -72,6 +78,9 @@ gameMapCharToColor gameMapChar =
         '#' ->
             "blue"
 
+        'i' ->
+            "#ff00ff"
+
         _ ->
             "black"
 
@@ -79,6 +88,7 @@ gameMapCharToColor gameMapChar =
 type alias Model =
     { player : Player
     , keysDown : Set String
+    , enemies : List Enemy
     }
 
 
@@ -86,6 +96,14 @@ type alias Player =
     { x : Float
     , y : Float
     , direction : Direction
+    }
+
+
+type alias Enemy =
+    { x : Float
+    , y : Float
+    , direction : Direction
+    , changeDirectionTime : Int
     }
 
 
@@ -100,6 +118,12 @@ init : () -> ( Model, Cmd Msg )
 init _ =
     ( { player = { x = boxWidth * 9.5, y = boxWidth * 15, direction = Left }
       , keysDown = Set.empty
+      , enemies =
+            [ { x = boxWidth * 8, y = boxWidth * 7, direction = Up, changeDirectionTime = 0 }
+            , { x = boxWidth * 11, y = boxWidth * 7, direction = Up, changeDirectionTime = 0 }
+            , { x = boxWidth * 8, y = boxWidth * 11, direction = Up, changeDirectionTime = 0 }
+            , { x = boxWidth * 11, y = boxWidth * 11, direction = Up, changeDirectionTime = 0 }
+            ]
       }
     , Cmd.none
     )
@@ -107,7 +131,7 @@ init _ =
 
 type Msg
     = NoOp
-    | AnimationFrame
+    | AnimationFrame Int
     | KeyDown String
     | KeyUp String
 
@@ -118,8 +142,13 @@ update msg model =
         NoOp ->
             ( model, Cmd.none )
 
-        AnimationFrame ->
-            ( { model | player = updatePlayer (playerDirection model.keysDown) model.player }, Cmd.none )
+        AnimationFrame timeNow ->
+            ( { model
+                | player = updatePlayer (playerDirection model.keysDown) model.player
+                , enemies = updateEnemies timeNow model.enemies
+              }
+            , Cmd.none
+            )
 
         KeyDown key ->
             ( { model | keysDown = Set.insert key model.keysDown }, Cmd.none )
@@ -200,6 +229,63 @@ updatePlayer maybeNewDirection player =
         player
 
 
+updateEnemies : Int -> List Enemy -> List Enemy
+updateEnemies timeNow enemies =
+    List.map (updateEnemy timeNow) enemies
+
+
+updateEnemy : Int -> Enemy -> Enemy
+updateEnemy timeNow enemy =
+    let
+        newDirection =
+            case timeNow |> modBy 4 of
+                0 ->
+                    Up
+
+                1 ->
+                    Down
+
+                2 ->
+                    Left
+
+                _ ->
+                    Right
+
+        ( newDx, newDy ) =
+            directionDeltas newDirection
+
+        ( newX, newY ) =
+            ( enemy.x + newDx, enemy.y + newDy )
+                |> Tuple.mapBoth wrapAround wrapAround
+
+        isNewDirectionOverlappingWalls =
+            List.any (overlapping { x = newX, y = newY }) gameMapWalls
+
+        ( oldDx, oldDy ) =
+            directionDeltas enemy.direction
+
+        ( oldX, oldY ) =
+            ( enemy.x + oldDx, enemy.y + oldDy )
+                |> Tuple.mapBoth wrapAround wrapAround
+
+        isOldDirectionOverlappingWalls =
+            List.any (overlapping { x = oldX, y = oldY }) gameMapWalls
+    in
+    if not isOldDirectionOverlappingWalls && timeNow < enemy.changeDirectionTime then
+        { enemy | x = oldX, y = oldY }
+
+    else if not isNewDirectionOverlappingWalls then
+        { enemy
+            | x = newX
+            , y = newY
+            , direction = newDirection
+            , changeDirectionTime = timeNow + changeDirectionTime
+        }
+
+    else
+        enemy
+
+
 wrapAround : Float -> Float
 wrapAround x =
     x |> round |> modBy (round gameWidth) |> toFloat
@@ -223,6 +309,7 @@ view model =
         ]
         [ viewGameMap
         , viewPlayer model.player
+        , viewEnemies model.enemies
         ]
 
 
@@ -233,19 +320,6 @@ viewGameMap =
             |> List.map (\r -> { x = r.x, y = r.y, color = gameMapCharToColor r.char })
             |> List.map viewBox
         )
-
-
-viewBox : { r | x : Float, y : Float, color : String } -> Html msg
-viewBox { x, y, color } =
-    div
-        [ style "position" "absolute"
-        , style "left" (px x)
-        , style "top" (px y)
-        , style "width" (px boxWidth)
-        , style "height" (px boxWidth)
-        , style "background-color" color
-        ]
-        []
 
 
 viewPlayer : Player -> Html msg
@@ -265,6 +339,24 @@ viewPlayer player =
         ]
 
 
+viewEnemies : List Enemy -> Html msg
+viewEnemies enemies =
+    div [] (List.map (\enemy -> viewBox { x = enemy.x, y = enemy.y, color = "red" }) enemies)
+
+
+viewBox : { r | x : Float, y : Float, color : String } -> Html msg
+viewBox { x, y, color } =
+    div
+        [ style "position" "absolute"
+        , style "left" (px x)
+        , style "top" (px y)
+        , style "width" (px boxWidth)
+        , style "height" (px boxWidth)
+        , style "background-color" color
+        ]
+        []
+
+
 px : Float -> String
 px pixels =
     String.fromFloat pixels ++ "px"
@@ -273,7 +365,7 @@ px pixels =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
-        [ onAnimationFrame (\_ -> AnimationFrame)
+        [ onAnimationFrame (Time.posixToMillis >> AnimationFrame)
         , onKeyDown (Decode.map KeyDown (Decode.field "key" Decode.string))
         , onKeyUp (Decode.map KeyUp (Decode.field "key" Decode.string))
         ]
