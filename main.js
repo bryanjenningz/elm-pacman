@@ -604,7 +604,7 @@ ${variant}`;
   var VERSION = "1.1.0";
   var TARGET_NAME = "main";
   var INITIAL_ELM_COMPILED_TIMESTAMP = Number(
-    "1668200306742"
+    "1668201919165"
   );
   var ORIGINAL_COMPILATION_MODE = "standard";
   var ORIGINAL_BROWSER_UI_POSITION = "BottomLeft";
@@ -8339,7 +8339,7 @@ var $author$project$Main$initialFood = A2(
 		$author$project$Main$gameMap));
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
-var $author$project$Main$init = function (_v0) {
+var $author$project$Main$init = function (screenWidth) {
 	return _Utils_Tuple2(
 		{
 			bullets: _List_Nil,
@@ -8352,10 +8352,12 @@ var $author$project$Main$init = function (_v0) {
 				]),
 			food: $author$project$Main$initialFood,
 			keysDown: $elm$core$Set$empty,
-			player: {direction: $author$project$Main$Left, x: $author$project$Main$boxWidth * 9.5, y: $author$project$Main$boxWidth * 15}
+			player: {direction: $author$project$Main$Left, x: $author$project$Main$boxWidth * 9.5, y: $author$project$Main$boxWidth * 15},
+			screenWidth: screenWidth
 		},
 		$elm$core$Platform$Cmd$none);
 };
+var $elm$json$Json$Decode$int = _Json_decodeInt;
 var $author$project$Main$AnimationFrame = function (a) {
 	return {$: 'AnimationFrame', a: a};
 };
@@ -9801,7 +9803,7 @@ var $author$project$Main$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
 			case 'Restart':
-				return $author$project$Main$init(_Utils_Tuple0);
+				return $author$project$Main$init(model.screenWidth);
 			case 'AnimationFrame':
 				var timeNow = msg.a;
 				return _Utils_Tuple2(
@@ -9862,6 +9864,9 @@ var $author$project$Main$px = function (pixels) {
 };
 var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
 var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
+var $author$project$Main$gameControlsMaxScreenWidth = 1000;
+var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
+var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
 var $elm$html$Html$button = _VirtualDom_node('button');
 var $elm$virtual_dom$VirtualDom$Normal = function (a) {
 	return {$: 'Normal', a: a};
@@ -9886,8 +9891,6 @@ var $author$project$Main$onTouchStart = function (msg) {
 		'touchstart',
 		$elm$json$Json$Decode$succeed(msg));
 };
-var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
-var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
 var $author$project$Main$viewGameControls = A2(
 	$elm$html$Html$div,
 	_List_fromArray(
@@ -10095,7 +10098,7 @@ var $author$project$Main$viewBottom = function (model) {
 	return _Utils_eq(model.food, _List_Nil) ? $author$project$Main$viewGameOverMessage(true) : (A2(
 		$elm$core$List$any,
 		$author$project$Main$overlapping(model.player),
-		model.enemies) ? $author$project$Main$viewGameOverMessage(false) : $author$project$Main$viewGameControls);
+		model.enemies) ? $author$project$Main$viewGameOverMessage(false) : ((_Utils_cmp(model.screenWidth, $author$project$Main$gameControlsMaxScreenWidth) < 1) ? $author$project$Main$viewGameControls : $elm$html$Html$text('')));
 };
 var $author$project$Main$viewBox = function (_v0) {
 	var x = _v0.x;
@@ -10249,5 +10252,4 @@ var $author$project$Main$view = function (model) {
 };
 var $author$project$Main$main = $elm$browser$Browser$element(
 	{init: $author$project$Main$init, subscriptions: $author$project$Main$subscriptions, update: $author$project$Main$update, view: $author$project$Main$view});
-_Platform_export({'Main':{'init':$author$project$Main$main(
-	$elm$json$Json$Decode$succeed(_Utils_Tuple0))(0)}});}(this));
+_Platform_export({'Main':{'init':$author$project$Main$main($elm$json$Json$Decode$int)(0)}});}(this));
