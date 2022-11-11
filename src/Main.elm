@@ -18,6 +18,11 @@ boxWidth =
     gameWidth / 20
 
 
+moveSpeed : Float
+moveSpeed =
+    2
+
+
 gameMap : List { x : Float, y : Float, color : String, char : Char }
 gameMap =
     [ "# ################ #"
@@ -144,7 +149,7 @@ playerDirection keysDown =
 
 directionDeltas : Direction -> ( Float, Float )
 directionDeltas direction =
-    case direction of
+    (case direction of
         Up ->
             ( 0, -1 )
 
@@ -156,6 +161,8 @@ directionDeltas direction =
 
         Right ->
             ( 1, 0 )
+    )
+        |> Tuple.mapBoth ((*) moveSpeed) ((*) moveSpeed)
 
 
 updatePlayer : Maybe Direction -> Player -> Player
@@ -169,6 +176,7 @@ updatePlayer maybeNewDirection player =
 
         ( newX, newY ) =
             ( player.x + newDx, player.y + newDy )
+                |> Tuple.mapBoth wrapAround wrapAround
 
         isNewDirectionOverlappingWalls =
             List.any (overlapping { x = newX, y = newY }) gameMapWalls
@@ -178,6 +186,7 @@ updatePlayer maybeNewDirection player =
 
         ( oldX, oldY ) =
             ( player.x + oldDx, player.y + oldDy )
+                |> Tuple.mapBoth wrapAround wrapAround
 
         isOldDirectionOverlappingWalls =
             List.any (overlapping { x = oldX, y = oldY }) gameMapWalls
@@ -190,6 +199,11 @@ updatePlayer maybeNewDirection player =
 
     else
         player
+
+
+wrapAround : Float -> Float
+wrapAround x =
+    x |> round |> modBy (round gameWidth) |> toFloat
 
 
 overlapping : { r | x : Float, y : Float } -> { r2 | x : Float, y : Float } -> Bool
@@ -206,9 +220,10 @@ view model =
         , style "width" (px gameWidth)
         , style "height" (px gameWidth)
         , style "margin" "40px auto"
+        , style "overflow" "hidden"
         ]
         [ viewGameMap
-        , viewBox { x = model.player.x, y = model.player.y, color = "yellow" }
+        , viewPlayer model.player
         ]
 
 
@@ -228,6 +243,23 @@ viewBox { x, y, color } =
         , style "background-color" color
         ]
         []
+
+
+viewPlayer : Player -> Html msg
+viewPlayer player =
+    div []
+        [ viewBox { x = player.x, y = player.y, color = "yellow" }
+        , if player.x + boxWidth > gameWidth then
+            viewBox
+                { x = wrapAround (player.x + boxWidth) - boxWidth, y = player.y, color = "yellow" }
+
+          else if player.y + boxWidth > gameWidth then
+            viewBox
+                { x = player.x, y = wrapAround (player.y + boxWidth) - boxWidth, color = "yellow" }
+
+          else
+            text ""
+        ]
 
 
 px : Float -> String
