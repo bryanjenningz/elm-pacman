@@ -1,7 +1,7 @@
 module Main exposing (main)
 
 import Browser
-import Browser.Events exposing (onAnimationFrame, onKeyDown, onKeyUp)
+import Browser.Events exposing (onAnimationFrame, onKeyDown, onKeyPress, onKeyUp)
 import Html exposing (Html, button, div, text)
 import Html.Attributes exposing (style)
 import Json.Decode as Decode
@@ -27,6 +27,13 @@ moveSpeed =
 changeDirectionTime : Int
 changeDirectionTime =
     500
+
+
+enemyRespawn : { x : Float, y : Float }
+enemyRespawn =
+    { x = gameWidth / 2 - boxWidth / 2
+    , y = gameWidth / 2 - boxWidth / 2
+    }
 
 
 gameMap : List { x : Float, y : Float, char : Char }
@@ -89,6 +96,7 @@ type alias Model =
     { player : Player
     , keysDown : Set String
     , enemies : List Enemy
+    , bullets : List Bullet
     }
 
 
@@ -109,6 +117,13 @@ type alias Enemy =
     }
 
 
+type alias Bullet =
+    { x : Float
+    , y : Float
+    , direction : Direction
+    }
+
+
 type Direction
     = Up
     | Down
@@ -126,6 +141,7 @@ init _ =
             , { x = boxWidth * 8, y = boxWidth * 11, direction = Up, changeDirectionTime = 0, path = [], isLockedOn = True }
             , { x = boxWidth * 11, y = boxWidth * 11, direction = Up, changeDirectionTime = 0, path = [], isLockedOn = False }
             ]
+      , bullets = []
       }
     , Cmd.none
     )
@@ -136,6 +152,7 @@ type Msg
     | AnimationFrame Int
     | KeyDown String
     | KeyUp String
+    | KeyPress String
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -147,7 +164,8 @@ update msg model =
         AnimationFrame timeNow ->
             ( { model
                 | player = updatePlayer (playerDirection model.keysDown) model.player
-                , enemies = updateEnemies timeNow model.player model.enemies
+                , enemies = updateEnemies timeNow model.player model.bullets model.enemies
+                , bullets = updateBullets model.enemies model.bullets
               }
             , Cmd.none
             )
@@ -157,6 +175,33 @@ update msg model =
 
         KeyUp key ->
             ( { model | keysDown = Set.remove key model.keysDown }, Cmd.none )
+
+        KeyPress key ->
+            case bulletDirection key |> Maybe.map (Bullet model.player.x model.player.y) of
+                Nothing ->
+                    ( model, Cmd.none )
+
+                Just bullet ->
+                    ( { model | bullets = bullet :: model.bullets }, Cmd.none )
+
+
+bulletDirection : String -> Maybe Direction
+bulletDirection key =
+    case key of
+        "w" ->
+            Just Up
+
+        "s" ->
+            Just Down
+
+        "a" ->
+            Just Left
+
+        "d" ->
+            Just Right
+
+        _ ->
+            Nothing
 
 
 playerDirection : Set String -> Maybe Direction
@@ -231,14 +276,17 @@ updatePlayer maybeNewDirection player =
         player
 
 
-updateEnemies : Int -> Player -> List Enemy -> List Enemy
-updateEnemies timeNow player enemies =
-    List.map (updateEnemy timeNow player) enemies
+updateEnemies : Int -> Player -> List Bullet -> List Enemy -> List Enemy
+updateEnemies timeNow player bullets enemies =
+    List.map (updateEnemy timeNow player bullets) enemies
 
 
-updateEnemy : Int -> Player -> Enemy -> Enemy
-updateEnemy timeNow player enemy =
+updateEnemy : Int -> Player -> List Bullet -> Enemy -> Enemy
+updateEnemy timeNow player bullets enemy =
     let
+        hitByAnyBullets =
+            List.any (overlapping enemy) bullets
+
         newDirection =
             case timeNow |> modBy 4 of
                 0 ->
@@ -293,7 +341,10 @@ updateEnemy timeNow player enemy =
             , clamp -moveSpeed moveSpeed <| pathY - enemy.y
             )
     in
-    if enemy.isLockedOn then
+    if hitByAnyBullets then
+        { enemy | x = enemyRespawn.x, y = enemyRespawn.y, path = [] }
+
+    else if enemy.isLockedOn then
         { enemy | x = enemy.x + pathDx, y = enemy.y + pathDy, path = path }
 
     else if not isOldDirectionOverlappingWalls && timeNow < enemy.changeDirectionTime then
@@ -309,6 +360,26 @@ updateEnemy timeNow player enemy =
 
     else
         enemy
+
+
+updateBullets : List Enemy -> List Bullet -> List Bullet
+updateBullets enemies bullets =
+    bullets
+        |> List.filter
+            (\bullet ->
+                not (List.any (overlapping bullet) enemies)
+                    && not (List.any (overlapping bullet) gameMapWalls)
+                    && (bullet.x >= 0 && bullet.x < gameWidth)
+                    && (bullet.y >= 0 && bullet.y < gameWidth)
+            )
+        |> List.map
+            (\bullet ->
+                let
+                    ( dx, dy ) =
+                        directionDeltas bullet.direction
+                in
+                { bullet | x = bullet.x + dx, y = bullet.y + dy }
+            )
 
 
 shortestPath : ( Float, Float ) -> ( Float, Float ) -> List ( Float, Float )
@@ -405,6 +476,7 @@ view model =
         [ viewGameMap
         , viewPlayer model.player
         , viewEnemies model.enemies
+        , viewBullets model.bullets
         ]
 
 
@@ -452,6 +524,11 @@ viewBox { x, y, color } =
         []
 
 
+viewBullets : List Bullet -> Html msg
+viewBullets bullets =
+    div [] (List.map (\{ x, y } -> viewBox { x = x, y = y, color = "cyan" }) bullets)
+
+
 px : Float -> String
 px pixels =
     String.fromFloat pixels ++ "px"
@@ -463,6 +540,7 @@ subscriptions model =
         [ onAnimationFrame (Time.posixToMillis >> AnimationFrame)
         , onKeyDown (Decode.map KeyDown (Decode.field "key" Decode.string))
         , onKeyUp (Decode.map KeyUp (Decode.field "key" Decode.string))
+        , onKeyPress (Decode.map KeyPress (Decode.field "key" Decode.string))
         ]
 
 
