@@ -617,28 +617,32 @@ viewGameControls =
             [ style "position" "absolute"
             , style "left" "50px"
             , style "top" "50px"
-            , onTouchStart (KeyPress "a")
+            , onTouchStart (KeyDown "ArrowLeft")
+            , onTouchEnd (KeyUp "ArrowLeft")
             ]
             [ text "<" ]
         , button
             [ style "position" "absolute"
             , style "left" "100px"
             , style "top" "50px"
-            , onTouchStart (KeyPress "d")
+            , onTouchStart (KeyDown "ArrowRight")
+            , onTouchEnd (KeyUp "ArrowRight")
             ]
             [ text ">" ]
         , button
             [ style "position" "absolute"
             , style "left" "75px"
             , style "top" "25px"
-            , onTouchStart (KeyPress "w")
+            , onTouchStart (KeyDown "ArrowUp")
+            , onTouchEnd (KeyUp "ArrowUp")
             ]
             [ text "^" ]
         , button
             [ style "position" "absolute"
             , style "left" "75px"
             , style "top" "75px"
-            , onTouchStart (KeyPress "s")
+            , onTouchStart (KeyDown "ArrowDown")
+            , onTouchEnd (KeyUp "ArrowDown")
             ]
             [ text "v" ]
 
@@ -647,32 +651,28 @@ viewGameControls =
             [ style "position" "absolute"
             , style "right" "100px"
             , style "top" "50px"
-            , onTouchStart (KeyDown "ArrowLeft")
-            , onTouchEnd (KeyUp "ArrowLeft")
+            , onTouchStart (KeyPress "a")
             ]
             [ text "<" ]
         , button
             [ style "position" "absolute"
             , style "right" "50px"
             , style "top" "50px"
-            , onTouchStart (KeyDown "ArrowRight")
-            , onTouchEnd (KeyUp "ArrowRight")
+            , onTouchStart (KeyPress "d")
             ]
             [ text ">" ]
         , button
             [ style "position" "absolute"
             , style "right" "75px"
             , style "top" "25px"
-            , onTouchStart (KeyDown "ArrowUp")
-            , onTouchEnd (KeyUp "ArrowUp")
+            , onTouchStart (KeyPress "w")
             ]
             [ text "^" ]
         , button
             [ style "position" "absolute"
             , style "right" "75px"
             , style "top" "75px"
-            , onTouchStart (KeyDown "ArrowDown")
-            , onTouchEnd (KeyUp "ArrowDown")
+            , onTouchStart (KeyPress "s")
             ]
             [ text "v" ]
         ]
