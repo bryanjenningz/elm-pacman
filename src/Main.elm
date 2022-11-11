@@ -501,7 +501,7 @@ view model =
             , viewEnemies model.enemies
             , viewBullets model.bullets
             ]
-        , viewGameOver model
+        , viewBottom model
         ]
 
 
@@ -559,8 +559,8 @@ viewFood food =
     div [] (List.map (\{ x, y } -> viewBox { x = x, y = y, color = "white" }) food)
 
 
-viewGameOver : Model -> Html Msg
-viewGameOver model =
+viewBottom : Model -> Html Msg
+viewBottom model =
     if model.food == [] then
         viewGameOverMessage True
 
@@ -568,7 +568,7 @@ viewGameOver model =
         viewGameOverMessage False
 
     else
-        text ""
+        viewGameControls
 
 
 viewGameOverMessage : Bool -> Html Msg
@@ -600,6 +600,96 @@ viewGameOverMessage isWin =
             ]
             [ text "Restart" ]
         ]
+
+
+viewGameControls : Html Msg
+viewGameControls =
+    div
+        [ style "position" "relative"
+        , style "left" "0"
+        , style "right" "0"
+        , style "width" "400px"
+        , style "height" "50px"
+        , style "margin" "0 auto"
+        ]
+        [ -- Left side
+          button
+            [ style "position" "absolute"
+            , style "left" "50px"
+            , style "top" "50px"
+            , onTouchStart (KeyDown "a")
+            , onTouchEnd (KeyUp "a")
+            ]
+            [ text "<" ]
+        , button
+            [ style "position" "absolute"
+            , style "left" "100px"
+            , style "top" "50px"
+            , onTouchStart (KeyDown "d")
+            , onTouchEnd (KeyUp "d")
+            ]
+            [ text ">" ]
+        , button
+            [ style "position" "absolute"
+            , style "left" "75px"
+            , style "top" "25px"
+            , onTouchStart (KeyDown "w")
+            , onTouchEnd (KeyUp "w")
+            ]
+            [ text "^" ]
+        , button
+            [ style "position" "absolute"
+            , style "left" "75px"
+            , style "top" "75px"
+            , onTouchStart (KeyDown "s")
+            , onTouchEnd (KeyUp "s")
+            ]
+            [ text "v" ]
+
+        -- Right side
+        , button
+            [ style "position" "absolute"
+            , style "right" "100px"
+            , style "top" "50px"
+            , onTouchStart (KeyDown "ArrowLeft")
+            , onTouchEnd (KeyUp "ArrowLeft")
+            ]
+            [ text "<" ]
+        , button
+            [ style "position" "absolute"
+            , style "right" "50px"
+            , style "top" "50px"
+            , onTouchStart (KeyDown "ArrowRight")
+            , onTouchEnd (KeyUp "ArrowRight")
+            ]
+            [ text ">" ]
+        , button
+            [ style "position" "absolute"
+            , style "right" "75px"
+            , style "top" "25px"
+            , onTouchStart (KeyDown "ArrowUp")
+            , onTouchEnd (KeyUp "ArrowUp")
+            ]
+            [ text "^" ]
+        , button
+            [ style "position" "absolute"
+            , style "right" "75px"
+            , style "top" "75px"
+            , onTouchStart (KeyDown "ArrowDown")
+            , onTouchEnd (KeyUp "ArrowDown")
+            ]
+            [ text "v" ]
+        ]
+
+
+onTouchStart : msg -> Html.Attribute msg
+onTouchStart msg =
+    Html.Events.on "touchstart" (Decode.succeed msg)
+
+
+onTouchEnd : msg -> Html.Attribute msg
+onTouchEnd msg =
+    Html.Events.on "touchend" (Decode.succeed msg)
 
 
 px : Float -> String
