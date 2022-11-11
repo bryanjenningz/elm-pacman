@@ -501,43 +501,7 @@ view model =
             , viewEnemies model.enemies
             , viewBullets model.bullets
             ]
-        , if model.food == [] then
-            div []
-                [ div
-                    [ style "font-size" "20px"
-                    , style "font-weight" "bold"
-                    , style "text-align" "center"
-                    , style "margin-bottom" "10px"
-                    ]
-                    [ text "You win!" ]
-                , button
-                    [ style "display" "block"
-                    , style "margin" "0 auto"
-                    , onClick Restart
-                    ]
-                    [ text "Restart" ]
-                ]
-
-          else if List.any (overlapping model.player) model.enemies then
-            div []
-                [ div
-                    [ style "font-size" "20px"
-                    , style "font-weight" "bold"
-                    , style "text-align" "center"
-                    , style "margin-bottom" "10px"
-                    , style "color" "red"
-                    ]
-                    [ text "You lose :(" ]
-                , button
-                    [ style "display" "block"
-                    , style "margin" "0 auto"
-                    , onClick Restart
-                    ]
-                    [ text "Restart" ]
-                ]
-
-          else
-            text ""
+        , viewGameOver model
         ]
 
 
@@ -593,6 +557,49 @@ viewBullets bullets =
 viewFood : List Food -> Html msg
 viewFood food =
     div [] (List.map (\{ x, y } -> viewBox { x = x, y = y, color = "white" }) food)
+
+
+viewGameOver : Model -> Html Msg
+viewGameOver model =
+    if model.food == [] then
+        viewGameOverMessage True
+
+    else if List.any (overlapping model.player) model.enemies then
+        viewGameOverMessage False
+
+    else
+        text ""
+
+
+viewGameOverMessage : Bool -> Html Msg
+viewGameOverMessage isWin =
+    div []
+        [ div
+            [ style "font-size" "20px"
+            , style "font-weight" "bold"
+            , style "text-align" "center"
+            , style "margin-bottom" "10px"
+            , style "color" <|
+                if isWin then
+                    "white"
+
+                else
+                    "red"
+            ]
+            [ text <|
+                if isWin then
+                    "You win!"
+
+                else
+                    "You lose :("
+            ]
+        , button
+            [ style "display" "block"
+            , style "margin" "0 auto"
+            , onClick Restart
+            ]
+            [ text "Restart" ]
+        ]
 
 
 px : Float -> String
