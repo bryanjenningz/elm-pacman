@@ -615,32 +615,44 @@ viewGameControls =
         [ -- Left side
           button
             [ style "position" "absolute"
-            , style "left" "50px"
+            , style "left" "15px"
             , style "top" "50px"
+            , style "width" "50px"
+            , style "height" "50px"
+            , style "border-radius" "50%"
             , onTouchStart (KeyDown "ArrowLeft")
             , onTouchEnd (KeyUp "ArrowLeft")
             ]
             [ text "<" ]
         , button
             [ style "position" "absolute"
-            , style "left" "100px"
+            , style "left" "95px"
             , style "top" "50px"
+            , style "width" "50px"
+            , style "height" "50px"
+            , style "border-radius" "50%"
             , onTouchStart (KeyDown "ArrowRight")
             , onTouchEnd (KeyUp "ArrowRight")
             ]
             [ text ">" ]
         , button
             [ style "position" "absolute"
-            , style "left" "75px"
-            , style "top" "25px"
+            , style "left" "55px"
+            , style "top" "10px"
+            , style "width" "50px"
+            , style "height" "50px"
+            , style "border-radius" "50%"
             , onTouchStart (KeyDown "ArrowUp")
             , onTouchEnd (KeyUp "ArrowUp")
             ]
             [ text "^" ]
         , button
             [ style "position" "absolute"
-            , style "left" "75px"
-            , style "top" "75px"
+            , style "left" "55px"
+            , style "top" "90px"
+            , style "width" "50px"
+            , style "height" "50px"
+            , style "border-radius" "50%"
             , onTouchStart (KeyDown "ArrowDown")
             , onTouchEnd (KeyUp "ArrowDown")
             ]
@@ -649,29 +661,41 @@ viewGameControls =
         -- Right side
         , button
             [ style "position" "absolute"
-            , style "right" "100px"
+            , style "right" "15px"
             , style "top" "50px"
+            , style "width" "50px"
+            , style "height" "50px"
+            , style "border-radius" "50%"
             , onTouchStart (KeyPress "a")
             ]
             [ text "<" ]
         , button
             [ style "position" "absolute"
-            , style "right" "50px"
+            , style "right" "95px"
             , style "top" "50px"
+            , style "width" "50px"
+            , style "height" "50px"
+            , style "border-radius" "50%"
             , onTouchStart (KeyPress "d")
             ]
             [ text ">" ]
         , button
             [ style "position" "absolute"
-            , style "right" "75px"
-            , style "top" "25px"
+            , style "right" "55px"
+            , style "top" "10px"
+            , style "width" "50px"
+            , style "height" "50px"
+            , style "border-radius" "50%"
             , onTouchStart (KeyPress "w")
             ]
             [ text "^" ]
         , button
             [ style "position" "absolute"
-            , style "right" "75px"
-            , style "top" "75px"
+            , style "right" "55px"
+            , style "top" "90px"
+            , style "width" "50px"
+            , style "height" "50px"
+            , style "border-radius" "50%"
             , onTouchStart (KeyPress "s")
             ]
             [ text "v" ]
