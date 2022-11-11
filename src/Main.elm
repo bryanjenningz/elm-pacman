@@ -104,6 +104,8 @@ type alias Enemy =
     , y : Float
     , direction : Direction
     , changeDirectionTime : Int
+    , path : List ( Float, Float )
+    , isLockedOn : Bool
     }
 
 
@@ -119,10 +121,10 @@ init _ =
     ( { player = { x = boxWidth * 9.5, y = boxWidth * 15, direction = Left }
       , keysDown = Set.empty
       , enemies =
-            [ { x = boxWidth * 8, y = boxWidth * 7, direction = Up, changeDirectionTime = 0 }
-            , { x = boxWidth * 11, y = boxWidth * 7, direction = Up, changeDirectionTime = 0 }
-            , { x = boxWidth * 8, y = boxWidth * 11, direction = Up, changeDirectionTime = 0 }
-            , { x = boxWidth * 11, y = boxWidth * 11, direction = Up, changeDirectionTime = 0 }
+            [ { x = boxWidth * 8, y = boxWidth * 7, direction = Up, changeDirectionTime = 0, path = [], isLockedOn = True }
+            , { x = boxWidth * 11, y = boxWidth * 7, direction = Up, changeDirectionTime = 0, path = [], isLockedOn = False }
+            , { x = boxWidth * 8, y = boxWidth * 11, direction = Up, changeDirectionTime = 0, path = [], isLockedOn = True }
+            , { x = boxWidth * 11, y = boxWidth * 11, direction = Up, changeDirectionTime = 0, path = [], isLockedOn = False }
             ]
       }
     , Cmd.none
@@ -145,7 +147,7 @@ update msg model =
         AnimationFrame timeNow ->
             ( { model
                 | player = updatePlayer (playerDirection model.keysDown) model.player
-                , enemies = updateEnemies timeNow model.enemies
+                , enemies = updateEnemies timeNow model.player model.enemies
               }
             , Cmd.none
             )
@@ -229,13 +231,13 @@ updatePlayer maybeNewDirection player =
         player
 
 
-updateEnemies : Int -> List Enemy -> List Enemy
-updateEnemies timeNow enemies =
-    List.map (updateEnemy timeNow) enemies
+updateEnemies : Int -> Player -> List Enemy -> List Enemy
+updateEnemies timeNow player enemies =
+    List.map (updateEnemy timeNow player) enemies
 
 
-updateEnemy : Int -> Enemy -> Enemy
-updateEnemy timeNow enemy =
+updateEnemy : Int -> Player -> Enemy -> Enemy
+updateEnemy timeNow player enemy =
     let
         newDirection =
             case timeNow |> modBy 4 of
@@ -270,8 +272,31 @@ updateEnemy timeNow enemy =
 
         isOldDirectionOverlappingWalls =
             List.any (overlapping { x = oldX, y = oldY }) gameMapWalls
+
+        path =
+            case enemy.path of
+                [] ->
+                    shortestPath ( enemy.x, enemy.y ) ( player.x, player.y )
+
+                ( nextX, nextY ) :: remPath ->
+                    if enemy.x == nextX && enemy.y == nextY then
+                        remPath
+
+                    else
+                        enemy.path
+
+        ( pathX, pathY ) =
+            List.head path |> Maybe.withDefault ( enemy.x, enemy.y )
+
+        ( pathDx, pathDy ) =
+            ( clamp -moveSpeed moveSpeed <| pathX - enemy.x
+            , clamp -moveSpeed moveSpeed <| pathY - enemy.y
+            )
     in
-    if not isOldDirectionOverlappingWalls && timeNow < enemy.changeDirectionTime then
+    if enemy.isLockedOn then
+        { enemy | x = enemy.x + pathDx, y = enemy.y + pathDy, path = path }
+
+    else if not isOldDirectionOverlappingWalls && timeNow < enemy.changeDirectionTime then
         { enemy | x = oldX, y = oldY }
 
     else if not isNewDirectionOverlappingWalls then
@@ -286,6 +311,49 @@ updateEnemy timeNow enemy =
         enemy
 
 
+shortestPath : ( Float, Float ) -> ( Float, Float ) -> List ( Float, Float )
+shortestPath source destination =
+    shortestPath_ Set.empty (queueEmpty |> queueAdd [ Tuple.mapBoth normalize normalize source ]) destination
+
+
+shortestPath_ : Set ( Float, Float ) -> Queue (List ( Float, Float )) -> ( Float, Float ) -> List ( Float, Float )
+shortestPath_ visited queue destination =
+    case queueNext queue of
+        ( Nothing, _ ) ->
+            []
+
+        ( Just [], newQueue ) ->
+            shortestPath_ visited newQueue destination
+
+        ( Just ((( x, y ) :: _) as path), newQueue ) ->
+            if ( x, y ) == destination then
+                List.reverse path
+
+            else
+                [ ( 0, 1 ), ( 0, -1 ), ( -1, 0 ), ( 1, 0 ) ]
+                    |> List.map (\( dx, dy ) -> ( x + dx * boxWidth, y + dy * boxWidth ))
+                    |> List.filter
+                        (\( newX, newY ) ->
+                            not (Set.member ( newX, newY ) visited)
+                                && not (List.any (\wall -> wall.x == newX && wall.y == newY) gameMapWalls)
+                                && (newX >= 0 && newX + boxWidth < gameWidth)
+                                && (newY >= 0 && newY + boxWidth < gameWidth)
+                        )
+                    |> List.foldl
+                        (\( newX, newY ) ( newVisited, newQueue_ ) ->
+                            ( Set.insert ( newX, newY ) newVisited
+                            , queueAdd (( newX, newY ) :: path) newQueue_
+                            )
+                        )
+                        ( visited, newQueue )
+                    |> (\( newVisited, newQueue_ ) -> shortestPath_ newVisited newQueue_ destination)
+
+
+normalize : Float -> Float
+normalize x =
+    toFloat (round x // round boxWidth) * boxWidth
+
+
 wrapAround : Float -> Float
 wrapAround x =
     x |> round |> modBy (round gameWidth) |> toFloat
@@ -295,6 +363,33 @@ overlapping : { r | x : Float, y : Float } -> { r2 | x : Float, y : Float } -> B
 overlapping p1 p2 =
     (p1.x < p2.x + boxWidth && p1.x + boxWidth > p2.x)
         && (p1.y < p2.y + boxWidth && p1.y + boxWidth > p2.y)
+
+
+type Queue a
+    = Queue (List a) (List a)
+
+
+queueEmpty : Queue a
+queueEmpty =
+    Queue [] []
+
+
+queueAdd : a -> Queue a -> Queue a
+queueAdd newest (Queue oldestToNewer newestToOlder) =
+    Queue oldestToNewer (newest :: newestToOlder)
+
+
+queueNext : Queue a -> ( Maybe a, Queue a )
+queueNext queue =
+    case queue of
+        Queue [] [] ->
+            ( Nothing, Queue [] [] )
+
+        Queue [] newestToOlder ->
+            queueNext (Queue (List.reverse newestToOlder) [])
+
+        Queue (oldest :: oldestToNewer) newestToOlder ->
+            ( Just oldest, Queue oldestToNewer newestToOlder )
 
 
 view : Model -> Html Msg
