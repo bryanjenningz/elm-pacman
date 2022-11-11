@@ -617,32 +617,28 @@ viewGameControls =
             [ style "position" "absolute"
             , style "left" "50px"
             , style "top" "50px"
-            , onTouchStart (KeyDown "a")
-            , onTouchEnd (KeyUp "a")
+            , onTouchStart (KeyPress "a")
             ]
             [ text "<" ]
         , button
             [ style "position" "absolute"
             , style "left" "100px"
             , style "top" "50px"
-            , onTouchStart (KeyDown "d")
-            , onTouchEnd (KeyUp "d")
+            , onTouchStart (KeyPress "d")
             ]
             [ text ">" ]
         , button
             [ style "position" "absolute"
             , style "left" "75px"
             , style "top" "25px"
-            , onTouchStart (KeyDown "w")
-            , onTouchEnd (KeyUp "w")
+            , onTouchStart (KeyPress "w")
             ]
             [ text "^" ]
         , button
             [ style "position" "absolute"
             , style "left" "75px"
             , style "top" "75px"
-            , onTouchStart (KeyDown "s")
-            , onTouchEnd (KeyUp "s")
+            , onTouchStart (KeyPress "s")
             ]
             [ text "v" ]
 
