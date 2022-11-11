@@ -1,0 +1,15 @@
+{
+  "homepage": "https://bryanjenningz.github.io/elm-pacman",
+  "scripts": {
+    "build": "elm make src/Main.elm --optimize --output=build/build/main.js; uglifyjs build/build/main.js --compress 'pure_funcs=[F2,F3,F4,F5,F6,F7,F8,F9,A2,A3,A4,A5,A6,A7,A8,A9],pure_getters,keep_fargs=false,unsafe_comps,unsafe' | uglifyjs --mangle --output build/build/main.js; cp index.html build/index.html",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
+    "dev": "elm-watch hot"
+  },
+  "devDependencies": {
+    "elm": "^0.19.1-5",
+    "elm-watch": "^1.1.0",
+    "gh-pages": "^4.0.0",
+    "uglify-js": "^3.17.4"
+  }
+}
