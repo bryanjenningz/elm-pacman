@@ -604,7 +604,7 @@ ${variant}`;
   var VERSION = "1.1.0";
   var TARGET_NAME = "main";
   var INITIAL_ELM_COMPILED_TIMESTAMP = Number(
-    "1668198053578"
+    "1668199040510"
   );
   var ORIGINAL_COMPILATION_MODE = "standard";
   var ORIGINAL_BROWSER_UI_POSITION = "BottomLeft";
@@ -9909,62 +9909,6 @@ var $author$project$Main$viewGameControls = A2(
 					A2($elm$html$Html$Attributes$style, 'left', '50px'),
 					A2($elm$html$Html$Attributes$style, 'top', '50px'),
 					$author$project$Main$onTouchStart(
-					$author$project$Main$KeyPress('a'))
-				]),
-			_List_fromArray(
-				[
-					$elm$html$Html$text('<')
-				])),
-			A2(
-			$elm$html$Html$button,
-			_List_fromArray(
-				[
-					A2($elm$html$Html$Attributes$style, 'position', 'absolute'),
-					A2($elm$html$Html$Attributes$style, 'left', '100px'),
-					A2($elm$html$Html$Attributes$style, 'top', '50px'),
-					$author$project$Main$onTouchStart(
-					$author$project$Main$KeyPress('d'))
-				]),
-			_List_fromArray(
-				[
-					$elm$html$Html$text('>')
-				])),
-			A2(
-			$elm$html$Html$button,
-			_List_fromArray(
-				[
-					A2($elm$html$Html$Attributes$style, 'position', 'absolute'),
-					A2($elm$html$Html$Attributes$style, 'left', '75px'),
-					A2($elm$html$Html$Attributes$style, 'top', '25px'),
-					$author$project$Main$onTouchStart(
-					$author$project$Main$KeyPress('w'))
-				]),
-			_List_fromArray(
-				[
-					$elm$html$Html$text('^')
-				])),
-			A2(
-			$elm$html$Html$button,
-			_List_fromArray(
-				[
-					A2($elm$html$Html$Attributes$style, 'position', 'absolute'),
-					A2($elm$html$Html$Attributes$style, 'left', '75px'),
-					A2($elm$html$Html$Attributes$style, 'top', '75px'),
-					$author$project$Main$onTouchStart(
-					$author$project$Main$KeyPress('s'))
-				]),
-			_List_fromArray(
-				[
-					$elm$html$Html$text('v')
-				])),
-			A2(
-			$elm$html$Html$button,
-			_List_fromArray(
-				[
-					A2($elm$html$Html$Attributes$style, 'position', 'absolute'),
-					A2($elm$html$Html$Attributes$style, 'right', '100px'),
-					A2($elm$html$Html$Attributes$style, 'top', '50px'),
-					$author$project$Main$onTouchStart(
 					$author$project$Main$KeyDown('ArrowLeft')),
 					$author$project$Main$onTouchEnd(
 					$author$project$Main$KeyUp('ArrowLeft'))
@@ -9978,7 +9922,7 @@ var $author$project$Main$viewGameControls = A2(
 			_List_fromArray(
 				[
 					A2($elm$html$Html$Attributes$style, 'position', 'absolute'),
-					A2($elm$html$Html$Attributes$style, 'right', '50px'),
+					A2($elm$html$Html$Attributes$style, 'left', '100px'),
 					A2($elm$html$Html$Attributes$style, 'top', '50px'),
 					$author$project$Main$onTouchStart(
 					$author$project$Main$KeyDown('ArrowRight')),
@@ -9994,7 +9938,7 @@ var $author$project$Main$viewGameControls = A2(
 			_List_fromArray(
 				[
 					A2($elm$html$Html$Attributes$style, 'position', 'absolute'),
-					A2($elm$html$Html$Attributes$style, 'right', '75px'),
+					A2($elm$html$Html$Attributes$style, 'left', '75px'),
 					A2($elm$html$Html$Attributes$style, 'top', '25px'),
 					$author$project$Main$onTouchStart(
 					$author$project$Main$KeyDown('ArrowUp')),
@@ -10010,12 +9954,68 @@ var $author$project$Main$viewGameControls = A2(
 			_List_fromArray(
 				[
 					A2($elm$html$Html$Attributes$style, 'position', 'absolute'),
-					A2($elm$html$Html$Attributes$style, 'right', '75px'),
+					A2($elm$html$Html$Attributes$style, 'left', '75px'),
 					A2($elm$html$Html$Attributes$style, 'top', '75px'),
 					$author$project$Main$onTouchStart(
 					$author$project$Main$KeyDown('ArrowDown')),
 					$author$project$Main$onTouchEnd(
 					$author$project$Main$KeyUp('ArrowDown'))
+				]),
+			_List_fromArray(
+				[
+					$elm$html$Html$text('v')
+				])),
+			A2(
+			$elm$html$Html$button,
+			_List_fromArray(
+				[
+					A2($elm$html$Html$Attributes$style, 'position', 'absolute'),
+					A2($elm$html$Html$Attributes$style, 'right', '100px'),
+					A2($elm$html$Html$Attributes$style, 'top', '50px'),
+					$author$project$Main$onTouchStart(
+					$author$project$Main$KeyPress('a'))
+				]),
+			_List_fromArray(
+				[
+					$elm$html$Html$text('<')
+				])),
+			A2(
+			$elm$html$Html$button,
+			_List_fromArray(
+				[
+					A2($elm$html$Html$Attributes$style, 'position', 'absolute'),
+					A2($elm$html$Html$Attributes$style, 'right', '50px'),
+					A2($elm$html$Html$Attributes$style, 'top', '50px'),
+					$author$project$Main$onTouchStart(
+					$author$project$Main$KeyPress('d'))
+				]),
+			_List_fromArray(
+				[
+					$elm$html$Html$text('>')
+				])),
+			A2(
+			$elm$html$Html$button,
+			_List_fromArray(
+				[
+					A2($elm$html$Html$Attributes$style, 'position', 'absolute'),
+					A2($elm$html$Html$Attributes$style, 'right', '75px'),
+					A2($elm$html$Html$Attributes$style, 'top', '25px'),
+					$author$project$Main$onTouchStart(
+					$author$project$Main$KeyPress('w'))
+				]),
+			_List_fromArray(
+				[
+					$elm$html$Html$text('^')
+				])),
+			A2(
+			$elm$html$Html$button,
+			_List_fromArray(
+				[
+					A2($elm$html$Html$Attributes$style, 'position', 'absolute'),
+					A2($elm$html$Html$Attributes$style, 'right', '75px'),
+					A2($elm$html$Html$Attributes$style, 'top', '75px'),
+					$author$project$Main$onTouchStart(
+					$author$project$Main$KeyPress('s'))
 				]),
 			_List_fromArray(
 				[
