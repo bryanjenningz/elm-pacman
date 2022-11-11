@@ -23,7 +23,7 @@ moveSpeed =
     2
 
 
-gameMap : List { x : Float, y : Float, color : String, char : Char }
+gameMap : List { x : Float, y : Float, char : Char }
 gameMap =
     [ "# ################ #"
     , "#                  #"
@@ -53,7 +53,6 @@ gameMap =
                     (\x gameMapChar ->
                         { x = toFloat x * boxWidth
                         , y = toFloat y * boxWidth
-                        , color = gameMapCharToColor gameMapChar
                         , char = gameMapChar
                         }
                     )
@@ -62,9 +61,9 @@ gameMap =
         |> List.concat
 
 
-gameMapWalls : List { x : Float, y : Float, color : String, char : Char }
+gameMapWalls : List { x : Float, y : Float, char : Char }
 gameMapWalls =
-    List.filter (.color >> (==) "blue") gameMap
+    List.filter (.char >> (==) '#') gameMap
 
 
 gameMapCharToColor : Char -> String
@@ -229,7 +228,11 @@ view model =
 
 viewGameMap : Html msg
 viewGameMap =
-    div [] (List.map viewBox gameMap)
+    div []
+        (gameMap
+            |> List.map (\r -> { x = r.x, y = r.y, color = gameMapCharToColor r.char })
+            |> List.map viewBox
+        )
 
 
 viewBox : { r | x : Float, y : Float, color : String } -> Html msg
