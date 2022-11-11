@@ -4,6 +4,7 @@ import Browser
 import Browser.Events exposing (onAnimationFrame, onKeyDown, onKeyPress, onKeyUp)
 import Html exposing (Html, button, div, text)
 import Html.Attributes exposing (style)
+import Html.Events exposing (onClick)
 import Json.Decode as Decode
 import Set exposing (Set)
 import Time
@@ -41,22 +42,22 @@ gameMap =
     [ "# ################ #"
     , "#                  #"
     , "# ### ######## ### #"
-    , "# #              # #"
+    , "# #f            f# #"
     , "# # #### ## #### # #"
-    , "#   #          #   #"
+    , "#   #f        f#   #"
     , "# ### ###  ### ### #"
-    , "    #          #    "
+    , "   f#f        f#f   "
     , "# # ### #ii# ### # #"
     , "#       #ii#       #"
     , "# ### # #  # # ### #"
-    , "#     #      #     #"
+    , "#f    #f    f#    f#"
     , "##### ###  ### #####"
-    , "      #      #      "
+    , "     f#f    f#f     "
     , "# # ### #### ### # #"
-    , "# #              # #"
+    , "# #f            f# #"
     , "# ###### ## ###### #"
-    , "#   ##   ##   ##   #"
-    , "# #    #    #    # #"
+    , "#   ##f  ##  f##   #"
+    , "# #f   #f  f#   f# #"
     , "# ################ #"
     ]
         |> List.map String.toList
@@ -79,6 +80,12 @@ gameMapWalls =
     List.filter (.char >> (==) '#') gameMap
 
 
+initialFood : List { x : Float, y : Float }
+initialFood =
+    List.filter (.char >> (==) 'f') gameMap
+        |> List.map (\{ x, y } -> { x = x, y = y })
+
+
 gameMapCharToColor : Char -> String
 gameMapCharToColor gameMapChar =
     case gameMapChar of
@@ -97,6 +104,7 @@ type alias Model =
     , keysDown : Set String
     , enemies : List Enemy
     , bullets : List Bullet
+    , food : List Food
     }
 
 
@@ -124,6 +132,12 @@ type alias Bullet =
     }
 
 
+type alias Food =
+    { x : Float
+    , y : Float
+    }
+
+
 type Direction
     = Up
     | Down
@@ -142,13 +156,14 @@ init _ =
             , { x = boxWidth * 11, y = boxWidth * 11, direction = Up, changeDirectionTime = 0, path = [], isLockedOn = False }
             ]
       , bullets = []
+      , food = initialFood
       }
     , Cmd.none
     )
 
 
 type Msg
-    = NoOp
+    = Restart
     | AnimationFrame Int
     | KeyDown String
     | KeyUp String
@@ -158,14 +173,15 @@ type Msg
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        NoOp ->
-            ( model, Cmd.none )
+        Restart ->
+            init ()
 
         AnimationFrame timeNow ->
             ( { model
                 | player = updatePlayer (playerDirection model.keysDown) model.player
                 , enemies = updateEnemies timeNow model.player model.bullets model.enemies
                 , bullets = updateBullets model.enemies model.bullets
+                , food = updateFood model.player model.food
               }
             , Cmd.none
             )
@@ -382,6 +398,11 @@ updateBullets enemies bullets =
             )
 
 
+updateFood : Player -> List Food -> List Food
+updateFood player food =
+    List.filter (not << overlapping player) food
+
+
 shortestPath : ( Float, Float ) -> ( Float, Float ) -> List ( Float, Float )
 shortestPath source destination =
     shortestPath_ Set.empty (queueEmpty |> queueAdd [ Tuple.mapBoth normalize normalize source ]) destination
@@ -465,18 +486,58 @@ queueNext queue =
 
 view : Model -> Html Msg
 view model =
-    div
-        [ style "position" "relative"
-        , style "border" "1px solid cyan"
-        , style "width" (px gameWidth)
-        , style "height" (px gameWidth)
-        , style "margin" "40px auto"
-        , style "overflow" "hidden"
-        ]
-        [ viewGameMap
-        , viewPlayer model.player
-        , viewEnemies model.enemies
-        , viewBullets model.bullets
+    div []
+        [ div
+            [ style "position" "relative"
+            , style "border" "1px solid cyan"
+            , style "width" (px gameWidth)
+            , style "height" (px gameWidth)
+            , style "margin" "40px auto"
+            , style "overflow" "hidden"
+            ]
+            [ viewGameMap
+            , viewPlayer model.player
+            , viewFood model.food
+            , viewEnemies model.enemies
+            , viewBullets model.bullets
+            ]
+        , if model.food == [] then
+            div []
+                [ div
+                    [ style "font-size" "20px"
+                    , style "font-weight" "bold"
+                    , style "text-align" "center"
+                    , style "margin-bottom" "10px"
+                    ]
+                    [ text "You win!" ]
+                , button
+                    [ style "display" "block"
+                    , style "margin" "0 auto"
+                    , onClick Restart
+                    ]
+                    [ text "Restart" ]
+                ]
+
+          else if List.any (overlapping model.player) model.enemies then
+            div []
+                [ div
+                    [ style "font-size" "20px"
+                    , style "font-weight" "bold"
+                    , style "text-align" "center"
+                    , style "margin-bottom" "10px"
+                    , style "color" "red"
+                    ]
+                    [ text "You lose :(" ]
+                , button
+                    [ style "display" "block"
+                    , style "margin" "0 auto"
+                    , onClick Restart
+                    ]
+                    [ text "Restart" ]
+                ]
+
+          else
+            text ""
         ]
 
 
@@ -529,6 +590,11 @@ viewBullets bullets =
     div [] (List.map (\{ x, y } -> viewBox { x = x, y = y, color = "cyan" }) bullets)
 
 
+viewFood : List Food -> Html msg
+viewFood food =
+    div [] (List.map (\{ x, y } -> viewBox { x = x, y = y, color = "white" }) food)
+
+
 px : Float -> String
 px pixels =
     String.fromFloat pixels ++ "px"
@@ -537,7 +603,11 @@ px pixels =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
-        [ onAnimationFrame (Time.posixToMillis >> AnimationFrame)
+        [ if model.food == [] || List.any (overlapping model.player) model.enemies then
+            Sub.none
+
+          else
+            onAnimationFrame (Time.posixToMillis >> AnimationFrame)
         , onKeyDown (Decode.map KeyDown (Decode.field "key" Decode.string))
         , onKeyUp (Decode.map KeyUp (Decode.field "key" Decode.string))
         , onKeyPress (Decode.map KeyPress (Decode.field "key" Decode.string))
