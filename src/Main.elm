@@ -661,7 +661,7 @@ viewGameControls =
         -- Right side
         , button
             [ style "position" "absolute"
-            , style "right" "15px"
+            , style "right" "95px"
             , style "top" "50px"
             , style "width" "50px"
             , style "height" "50px"
@@ -671,7 +671,7 @@ viewGameControls =
             [ text "<" ]
         , button
             [ style "position" "absolute"
-            , style "right" "95px"
+            , style "right" "15px"
             , style "top" "50px"
             , style "width" "50px"
             , style "height" "50px"
