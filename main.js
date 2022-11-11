@@ -604,7 +604,7 @@ ${variant}`;
   var VERSION = "1.1.0";
   var TARGET_NAME = "main";
   var INITIAL_ELM_COMPILED_TIMESTAMP = Number(
-    "1668199040510"
+    "1668199828263"
   );
   var ORIGINAL_COMPILATION_MODE = "standard";
   var ORIGINAL_BROWSER_UI_POSITION = "BottomLeft";
@@ -9906,8 +9906,11 @@ var $author$project$Main$viewGameControls = A2(
 			_List_fromArray(
 				[
 					A2($elm$html$Html$Attributes$style, 'position', 'absolute'),
-					A2($elm$html$Html$Attributes$style, 'left', '50px'),
+					A2($elm$html$Html$Attributes$style, 'left', '15px'),
 					A2($elm$html$Html$Attributes$style, 'top', '50px'),
+					A2($elm$html$Html$Attributes$style, 'width', '50px'),
+					A2($elm$html$Html$Attributes$style, 'height', '50px'),
+					A2($elm$html$Html$Attributes$style, 'border-radius', '50%'),
 					$author$project$Main$onTouchStart(
 					$author$project$Main$KeyDown('ArrowLeft')),
 					$author$project$Main$onTouchEnd(
@@ -9922,8 +9925,11 @@ var $author$project$Main$viewGameControls = A2(
 			_List_fromArray(
 				[
 					A2($elm$html$Html$Attributes$style, 'position', 'absolute'),
-					A2($elm$html$Html$Attributes$style, 'left', '100px'),
+					A2($elm$html$Html$Attributes$style, 'left', '95px'),
 					A2($elm$html$Html$Attributes$style, 'top', '50px'),
+					A2($elm$html$Html$Attributes$style, 'width', '50px'),
+					A2($elm$html$Html$Attributes$style, 'height', '50px'),
+					A2($elm$html$Html$Attributes$style, 'border-radius', '50%'),
 					$author$project$Main$onTouchStart(
 					$author$project$Main$KeyDown('ArrowRight')),
 					$author$project$Main$onTouchEnd(
@@ -9938,8 +9944,11 @@ var $author$project$Main$viewGameControls = A2(
 			_List_fromArray(
 				[
 					A2($elm$html$Html$Attributes$style, 'position', 'absolute'),
-					A2($elm$html$Html$Attributes$style, 'left', '75px'),
-					A2($elm$html$Html$Attributes$style, 'top', '25px'),
+					A2($elm$html$Html$Attributes$style, 'left', '55px'),
+					A2($elm$html$Html$Attributes$style, 'top', '10px'),
+					A2($elm$html$Html$Attributes$style, 'width', '50px'),
+					A2($elm$html$Html$Attributes$style, 'height', '50px'),
+					A2($elm$html$Html$Attributes$style, 'border-radius', '50%'),
 					$author$project$Main$onTouchStart(
 					$author$project$Main$KeyDown('ArrowUp')),
 					$author$project$Main$onTouchEnd(
@@ -9954,8 +9963,11 @@ var $author$project$Main$viewGameControls = A2(
 			_List_fromArray(
 				[
 					A2($elm$html$Html$Attributes$style, 'position', 'absolute'),
-					A2($elm$html$Html$Attributes$style, 'left', '75px'),
-					A2($elm$html$Html$Attributes$style, 'top', '75px'),
+					A2($elm$html$Html$Attributes$style, 'left', '55px'),
+					A2($elm$html$Html$Attributes$style, 'top', '90px'),
+					A2($elm$html$Html$Attributes$style, 'width', '50px'),
+					A2($elm$html$Html$Attributes$style, 'height', '50px'),
+					A2($elm$html$Html$Attributes$style, 'border-radius', '50%'),
 					$author$project$Main$onTouchStart(
 					$author$project$Main$KeyDown('ArrowDown')),
 					$author$project$Main$onTouchEnd(
@@ -9970,8 +9982,11 @@ var $author$project$Main$viewGameControls = A2(
 			_List_fromArray(
 				[
 					A2($elm$html$Html$Attributes$style, 'position', 'absolute'),
-					A2($elm$html$Html$Attributes$style, 'right', '100px'),
+					A2($elm$html$Html$Attributes$style, 'right', '15px'),
 					A2($elm$html$Html$Attributes$style, 'top', '50px'),
+					A2($elm$html$Html$Attributes$style, 'width', '50px'),
+					A2($elm$html$Html$Attributes$style, 'height', '50px'),
+					A2($elm$html$Html$Attributes$style, 'border-radius', '50%'),
 					$author$project$Main$onTouchStart(
 					$author$project$Main$KeyPress('a'))
 				]),
@@ -9984,8 +9999,11 @@ var $author$project$Main$viewGameControls = A2(
 			_List_fromArray(
 				[
 					A2($elm$html$Html$Attributes$style, 'position', 'absolute'),
-					A2($elm$html$Html$Attributes$style, 'right', '50px'),
+					A2($elm$html$Html$Attributes$style, 'right', '95px'),
 					A2($elm$html$Html$Attributes$style, 'top', '50px'),
+					A2($elm$html$Html$Attributes$style, 'width', '50px'),
+					A2($elm$html$Html$Attributes$style, 'height', '50px'),
+					A2($elm$html$Html$Attributes$style, 'border-radius', '50%'),
 					$author$project$Main$onTouchStart(
 					$author$project$Main$KeyPress('d'))
 				]),
@@ -9998,8 +10016,11 @@ var $author$project$Main$viewGameControls = A2(
 			_List_fromArray(
 				[
 					A2($elm$html$Html$Attributes$style, 'position', 'absolute'),
-					A2($elm$html$Html$Attributes$style, 'right', '75px'),
-					A2($elm$html$Html$Attributes$style, 'top', '25px'),
+					A2($elm$html$Html$Attributes$style, 'right', '55px'),
+					A2($elm$html$Html$Attributes$style, 'top', '10px'),
+					A2($elm$html$Html$Attributes$style, 'width', '50px'),
+					A2($elm$html$Html$Attributes$style, 'height', '50px'),
+					A2($elm$html$Html$Attributes$style, 'border-radius', '50%'),
 					$author$project$Main$onTouchStart(
 					$author$project$Main$KeyPress('w'))
 				]),
@@ -10012,8 +10033,11 @@ var $author$project$Main$viewGameControls = A2(
 			_List_fromArray(
 				[
 					A2($elm$html$Html$Attributes$style, 'position', 'absolute'),
-					A2($elm$html$Html$Attributes$style, 'right', '75px'),
-					A2($elm$html$Html$Attributes$style, 'top', '75px'),
+					A2($elm$html$Html$Attributes$style, 'right', '55px'),
+					A2($elm$html$Html$Attributes$style, 'top', '90px'),
+					A2($elm$html$Html$Attributes$style, 'width', '50px'),
+					A2($elm$html$Html$Attributes$style, 'height', '50px'),
+					A2($elm$html$Html$Attributes$style, 'border-radius', '50%'),
 					$author$project$Main$onTouchStart(
 					$author$project$Main$KeyPress('s'))
 				]),
